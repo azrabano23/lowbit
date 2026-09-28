@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lowbit"
+version = "0.1.0"
+description = "Fused dequantize+GEMM CPU kernels (int4 W4A16, W4A8 via AVX-512 VNNI, OCP MXFP4) with runtime ISA dispatch, a tile autotuner and bit-exact tests."
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+bench = ["threadpoolctl>=3"]
+
+[project.scripts]
+lowbit = "lowbit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+lowbit = ["csrc/*.c", "csrc/*.h", "csrc/*.inc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

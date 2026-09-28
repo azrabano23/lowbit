@@ -1,0 +1,11 @@
+# compiled kernels (built lazily by lowbit/_build.py or `make`)
+*.so
+*.dylib
+*.dll
+*.o
+src/lowbit/_build/
+build/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+results/*.tmp

@@ -1,0 +1,12 @@
+/* Micro-tile shapes (MR rows of X x NR rows of W) compiled for every SIMD ISA. */
+DEF_TILE(1, 1)
+DEF_TILE(1, 2)
+DEF_TILE(1, 4)
+DEF_TILE(2, 1)
+DEF_TILE(2, 2)
+DEF_TILE(2, 4)
+DEF_TILE(4, 1)
+DEF_TILE(4, 2)
+DEF_TILE(4, 4)
+DEF_TILE(8, 1)
+DEF_TILE(8, 2)

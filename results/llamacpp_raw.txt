@@ -1,0 +1,33 @@
+### threads=1
+Testing 1 devices
+
+Backend 1/1: CPU
+  Device description: Intel(R) Xeon(R) Processor @ 2.10GHz
+  Device memory: 16094 MB (16094 MB free)
+
+  MUL_MAT(type_a=f32,type_b=f32,m=4096,n=1,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                  69 runs - 16567.42 us/run - 117.44 MFLOP/run -   7.09 GFLOPS
+  MUL_MAT(type_a=q4_0,type_b=f32,m=4096,n=1,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                414 runs -  2833.96 us/run - 117.44 MFLOP/run -  41.44 GFLOPS
+  MUL_MAT(type_a=mxfp4,type_b=f32,m=4096,n=1,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):               345 runs -  3208.39 us/run - 117.44 MFLOP/run -  36.60 GFLOPS
+  MUL_MAT(type_a=f32,type_b=f32,m=4096,n=8,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                  45 runs - 23109.89 us/run - 939.52 MFLOP/run -  40.65 GFLOPS
+  MUL_MAT(type_a=q4_0,type_b=f32,m=4096,n=8,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                 81 runs - 12440.83 us/run - 939.52 MFLOP/run -  75.52 GFLOPS
+  MUL_MAT(type_a=mxfp4,type_b=f32,m=4096,n=8,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                36 runs - 28785.42 us/run - 939.52 MFLOP/run -  32.64 GFLOPS
+  Backend CPU: OK
+1/1 backends passed
+OK
+
+### threads=4
+Testing 1 devices
+
+Backend 1/1: CPU
+  Device description: Intel(R) Xeon(R) Processor @ 2.10GHz
+  Device memory: 16094 MB (16094 MB free)
+
+  MUL_MAT(type_a=f32,type_b=f32,m=4096,n=1,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                 414 runs -  2986.51 us/run - 117.44 MFLOP/run -  39.32 GFLOPS
+  MUL_MAT(type_a=q4_0,type_b=f32,m=4096,n=1,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):               1311 runs -   786.14 us/run - 117.44 MFLOP/run - 149.39 GFLOPS
+  MUL_MAT(type_a=mxfp4,type_b=f32,m=4096,n=1,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):              1242 runs -   830.62 us/run - 117.44 MFLOP/run - 141.39 GFLOPS
+  MUL_MAT(type_a=f32,type_b=f32,m=4096,n=8,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                 252 runs -  4105.21 us/run - 939.52 MFLOP/run - 228.86 GFLOPS
+  MUL_MAT(type_a=q4_0,type_b=f32,m=4096,n=8,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):                306 runs -  3356.79 us/run - 939.52 MFLOP/run - 279.89 GFLOPS
+  MUL_MAT(type_a=mxfp4,type_b=f32,m=4096,n=8,k=14336,bs=[1,1],nr=[1,1],per=[0,1,2,3],k_v=0,o=1,src_overlap=0,m_v=0,pad=0):               162 runs -  6188.93 us/run - 939.52 MFLOP/run - 151.81 GFLOPS
+  Backend CPU: OK
+1/1 backends passed
+OK

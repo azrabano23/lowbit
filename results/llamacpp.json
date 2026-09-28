@@ -1,0 +1,419 @@
+{
+ "meta": {
+  "date": "2026-09-28T23:10:47+00:00",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz|4c",
+  "llama_cpp_commit": "1c4729414deba3bcacef6a5614e2ca04d069be3a",
+  "ggml_bench": "test-backend-ops perf -o MUL_MAT (CPU backend, default buffer type: no Q4_0 repacking / AMX extra buffers)",
+  "note": "ggml m/n = our N/M. ggml times are its own mean us/run; ours are medians. Both reuse the same weights every call (hot cache)."
+ },
+ "rows": [
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "f32",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 69,
+   "t_s": 0.016567419999999996,
+   "gflops": 7.088642166372315
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "q4_0",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 414,
+   "t_s": 0.00283396,
+   "gflops": 41.4404268232438
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "mxfp4",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 345,
+   "t_s": 0.0032083899999999998,
+   "gflops": 36.604188393555646
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "f32",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 45,
+   "t_s": 0.023109889999999998,
+   "gflops": 40.65463297315566
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "q4_0",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 81,
+   "t_s": 0.01244083,
+   "gflops": 75.51940634185983
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "mxfp4",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 36,
+   "t_s": 0.028785419999999996,
+   "gflops": 32.63888788143443
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a16",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 196,
+   "t_s": 0.002527588500015554,
+   "gflops": 46.463461912125844,
+   "params": {
+    "mr": 1,
+    "nr": 4,
+    "nb": 256,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.05962981761652544
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 avx512-vnni",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 200,
+   "t_s": 0.0012144239997269324,
+   "gflops": 96.70470282735431,
+   "params": {
+    "mr": 1,
+    "nr": 2,
+    "nb": 32,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.12188207075799123
+  },
+  {
+   "impl": "lowbit",
+   "type": "mxfp4",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 179,
+   "t_s": 0.002652709999892977,
+   "gflops": 44.27190005870906,
+   "params": {
+    "mr": 1,
+    "nr": 4,
+    "nb": 64,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.05951089601307685
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 amx",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 200,
+   "t_s": 0.0017820259997733956,
+   "gflops": 65.90280501795925,
+   "other_tenant_cores": 0.055249302991554394
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a16",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 43,
+   "t_s": 0.011867237999922509,
+   "gflops": 79.16956717360307,
+   "params": {
+    "mr": 2,
+    "nr": 4,
+    "nb": 32,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.03860951760510546
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 avx512-vnni",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 117,
+   "t_s": 0.0043148469999323424,
+   "gflops": 217.7421577207099,
+   "params": {
+    "mr": 4,
+    "nr": 4,
+    "nb": 128,
+    "kb": 0,
+    "order": 1
+   },
+   "other_tenant_cores": 0.0393318740198249
+  },
+  {
+   "impl": "lowbit",
+   "type": "mxfp4",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 47,
+   "t_s": 0.010711672000070394,
+   "gflops": 87.71031226439959,
+   "params": {
+    "mr": 4,
+    "nr": 4,
+    "nb": 256,
+    "kb": 0,
+    "order": 1
+   },
+   "other_tenant_cores": 0.019448239897615835
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 amx",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 1,
+   "runs": 200,
+   "t_s": 0.002232932000197252,
+   "gflops": 420.7580418557326,
+   "other_tenant_cores": 0.022285882539111828
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "f32",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 414,
+   "t_s": 0.00298651,
+   "gflops": 39.323662736773024
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "q4_0",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 1311,
+   "t_s": 0.00078614,
+   "gflops": 149.38880097692524
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "mxfp4",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 1242,
+   "t_s": 0.00083062,
+   "gflops": 141.3889769088151
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "f32",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 252,
+   "t_s": 0.00410521,
+   "gflops": 228.8613971027061
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "q4_0",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 306,
+   "t_s": 0.0033567899999999997,
+   "gflops": 279.8876593412159
+  },
+  {
+   "impl": "llama.cpp/ggml",
+   "type": "mxfp4",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 162,
+   "t_s": 0.00618893,
+   "gflops": 151.80719381217756
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a16",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 200,
+   "t_s": 0.0006469625000136148,
+   "gflops": 181.52599570690506,
+   "params": {
+    "mr": 1,
+    "nr": 4,
+    "nb": 32,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 4.9321569066788514e-12
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 avx512-vnni",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 200,
+   "t_s": 0.00035402900016379135,
+   "gflops": 331.725683335733,
+   "params": {
+    "mr": 1,
+    "nr": 1,
+    "nb": 64,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.0
+  },
+  {
+   "impl": "lowbit",
+   "type": "mxfp4",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 200,
+   "t_s": 0.0007311264998861589,
+   "gflops": 160.6295381418759,
+   "params": {
+    "mr": 1,
+    "nr": 2,
+    "nb": 128,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.06656547781751385
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 amx",
+   "M": 1,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 200,
+   "t_s": 0.0005186500000036176,
+   "gflops": 226.4349985523587,
+   "other_tenant_cores": 0.18679376488277566
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a16",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 193,
+   "t_s": 0.0025947139997697377,
+   "gflops": 362.0915816091392,
+   "params": {
+    "mr": 4,
+    "nr": 2,
+    "nb": 32,
+    "kb": 2048,
+    "order": 0
+   },
+   "other_tenant_cores": 0.0
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 avx512-vnni",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 200,
+   "t_s": 0.001349902000356451,
+   "gflops": 695.9942986616155,
+   "params": {
+    "mr": 4,
+    "nr": 4,
+    "nb": 64,
+    "kb": 0,
+    "order": 0
+   },
+   "other_tenant_cores": 0.036684961812298564
+  },
+  {
+   "impl": "lowbit",
+   "type": "mxfp4",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 174,
+   "t_s": 0.0028463235000799614,
+   "gflops": 330.0833851013794,
+   "params": {
+    "mr": 4,
+    "nr": 4,
+    "nb": 16,
+    "kb": 0,
+    "order": 1
+   },
+   "other_tenant_cores": 1.3685943556325174e-12
+  },
+  {
+   "impl": "lowbit",
+   "type": "w4a8 amx",
+   "M": 8,
+   "N": 4096,
+   "K": 14336,
+   "threads": 4,
+   "runs": 200,
+   "t_s": 0.0009338445001958462,
+   "gflops": 1006.0819502636282,
+   "other_tenant_cores": 0.05144913723618271
+  }
+ ]
+}
