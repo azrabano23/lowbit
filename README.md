@@ -157,6 +157,9 @@ How to read this (the commentary is written by hand; the tables are not):
 * **vs llama.cpp:** on ggml's own harness and its default CPU path, our W4A8
   VNNI kernel is ~2.2–2.9× ggml's Q4_0 at decode and our MXFP4 is ~1.1–2.7×
   ggml's MXFP4. Read the caveats in "What is real" before quoting this.
+  **End to end the lead reverses:** with a real model, llama.cpp repacks Q4_0
+  into its AMX path and decodes 1.1–1.8× faster than our best backend (W4A8),
+  and prefills 2–5× faster (see "End-to-end" below).
 
 All measurements, per-shape tables, tuned tile parameters and the autotuner's
 gain over the default tiles are in [`results/RESULTS.md`](results/RESULTS.md);
