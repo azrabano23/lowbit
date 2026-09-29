@@ -491,7 +491,7 @@ def render(res: dict, validation: dict | None = None, llama: dict | None = None)
         out.append("")
     qd = meta.get("quality_date")
     out.append(f"Measured {meta['date']}"
-               + (f" (perplexity {qd})" if qd and qd != meta["date"] else "")
+               + (f" (last perplexity run {qd})" if qd and qd != meta["date"] else "")
                + f" on `{meta['cpu']}` (kernels: "
                + ", ".join(f"{k} {v}" for k, v in meta["effective_isa"].items())
                + f"), numpy {meta['numpy']} with {meta['blas']}. Load average at start/end: "
@@ -511,6 +511,14 @@ def render_llama(d: dict) -> str:
                    + " | ".join(f"{r[t]:.1f}" if r.get(t) is not None else "—"
                                 for t in m["tests"]) + " |")
     out += ["", m["note"]]
+    ppl = d.get("perplexity")
+    if ppl:
+        c = next(iter(ppl.values()))
+        out += ["", f"llama.cpp's own `llama-perplexity -c {c['ctx']}` on the same text "
+                f"(it scores only the second half of each window, so the absolute values "
+                f"are not comparable with ours, only the fp32 → 4-bit ratio): "
+                + ", ".join(f"{k} {v['ppl']:.3f} ± {v['stderr']:.3f}" for k, v in ppl.items())
+                + "."]
     return "\n".join(out)
 
 
