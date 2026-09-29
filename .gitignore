@@ -18,3 +18,9 @@ myoedge/data/
 *.dll
 src/lowbit/_build/
 results/*.tmp
+# model weights and downloads (lowbit e2e fetches to ~/.cache/lowbit/models)
+*.safetensors
+*.gguf
+*.bin
+.cache/
+models/

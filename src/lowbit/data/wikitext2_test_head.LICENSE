@@ -1,0 +1,12 @@
+wikitext2_test_head.txt is an excerpt (the first 181 lines, 88,203 characters) of
+the WikiText-2 raw test split (Merity et al., "Pointer Sentinel Mixture Models",
+2016), taken unmodified from the Hugging Face dataset Salesforce/wikitext,
+revision b08601e04326c79dfdd32d625aee71d232d685c3,
+file wikitext-2-raw-v1/test-00000-of-00001.parquet
+(sha256 5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91),
+with the "text" rows concatenated as-is.
+
+WikiText is derived from Wikipedia articles and is licensed under the Creative
+Commons Attribution-ShareAlike 3.0 Unported License (CC BY-SA 3.0),
+https://creativecommons.org/licenses/by-sa/3.0/. This excerpt is distributed
+under the same license; it is not covered by the license of the lowbit code.

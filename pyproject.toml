@@ -12,6 +12,8 @@ dependencies = ["numpy>=1.24"]
 [project.optional-dependencies]
 test = ["pytest>=7"]
 bench = ["threadpoolctl>=3"]
+# `lowbit e2e` on a real model: HF tokenizer (weights are read without torch/safetensors)
+model = ["tokenizers>=0.15", "threadpoolctl>=3"]
 
 [project.scripts]
 lowbit = "lowbit.cli:main"
@@ -20,7 +22,7 @@ lowbit = "lowbit.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-lowbit = ["csrc/*.c", "csrc/*.h", "csrc/*.inc"]
+lowbit = ["csrc/*.c", "csrc/*.h", "csrc/*.inc", "data/*.txt", "data/*.LICENSE"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

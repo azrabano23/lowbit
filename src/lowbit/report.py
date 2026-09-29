@@ -207,4 +207,6 @@ def write(results_dir: Path | str, readme: Path | str | None = None) -> list[Pat
         _, post = rest.split(END, 1)
         rp.write_text(pre + BEGIN + "\n" + readme_block(rd) + "\n" + END + post)
         written.append(rp)
+        from . import e2e
+        e2e.write_readme(rd, rp)  # the End-to-end block, if results/e2e.json exists
     return written

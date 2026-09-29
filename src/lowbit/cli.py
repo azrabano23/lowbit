@@ -1,4 +1,4 @@
-"""`lowbit` command line: info, build, tune, bench, report."""
+"""`lowbit` command line: info, build, tune, bench, report, e2e."""
 from __future__ import annotations
 
 import argparse
@@ -68,6 +68,35 @@ def cmd_report(a) -> int:
     return 0
 
 
+def cmd_e2e(a) -> int:
+    from . import e2e as E
+    out = Path(a.out)
+    if a.render_only:
+        if not a.readme:
+            raise SystemExit("--render-only needs --readme")
+        p = E.write_readme(out, a.readme)
+        print(f"wrote {p}" if p else "nothing to render (no markers or no e2e.json)")
+        return 0
+    model_dir = None
+    if not a.tiny:
+        model_dir = Path(a.model_dir) if a.model_dir else E.fetch_model(a.model, a.cache)
+    res = E.run(model_dir, backends=a.backend or list(E.M.BACKENDS),
+                threads_list=a.threads or [1, 4], do_speed=not a.no_speed,
+                do_quality=not a.no_quality, n_decode=a.decode, prompt_tokens=a.prompt,
+                pp=a.pp, reps=a.reps, ctx=a.ctx, n_tokens=a.eval_tokens,
+                idle_threshold=a.wait_idle, asym=a.asym, tiny=a.tiny)
+    prev = out / "e2e.json"
+    if (a.no_speed or a.no_quality) and prev.exists() and not a.tiny:
+        res = E.merge(json.loads(prev.read_text()), res, speed=not a.no_speed,
+                      quality=not a.no_quality)
+    p = E.save(res, out)
+    print(f"wrote {p}")
+    if a.readme:
+        w = E.write_readme(out, a.readme)
+        print(f"wrote {w}" if w else f"{a.readme}: no E2E markers, not updated")
+    return 0
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(prog="lowbit", description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -108,6 +137,33 @@ def main(argv=None) -> int:
     s.add_argument("--results", default="results")
     s.add_argument("--readme")
     s.set_defaults(fn=cmd_report)
+
+    s = sub.add_parser("e2e", help="end-to-end LLM tokens/s and perplexity per backend")
+    s.add_argument("--model", default="Qwen2.5-0.5B", help="pinned model to fetch")
+    s.add_argument("--model-dir", help="use a local HF model directory instead of fetching")
+    s.add_argument("--cache", default=None, help="model download dir "
+                   "(default $LOWBIT_MODEL_CACHE or ~/.cache/lowbit/models)")
+    s.add_argument("--tiny", action="store_true",
+                   help="tiny random model and random tokens (no download; smoke test)")
+    s.add_argument("--backend", action="append",
+                   help="fp32 | w4a16 | w4a8 | mxfp4, optionally +asym (int4 zero-point) "
+                        "and/or +fp32head (LM head not quantized); repeatable")
+    s.add_argument("--threads", type=int, action="append")
+    s.add_argument("--prompt", type=int, default=64, help="prompt tokens")
+    s.add_argument("--decode", type=int, default=128, help="decode steps")
+    s.add_argument("--pp", type=int, default=512, help="separate prefill length (0 = skip)")
+    s.add_argument("--reps", type=int, default=5)
+    s.add_argument("--ctx", type=int, default=1024, help="perplexity window")
+    s.add_argument("--eval-tokens", type=int, default=20480)
+    s.add_argument("--asym", action="store_true", help="asymmetric int4 (uint8 zero-point)")
+    s.add_argument("--no-speed", action="store_true")
+    s.add_argument("--no-quality", action="store_true")
+    s.add_argument("--wait-idle", type=float, default=0.0, metavar="FRAC")
+    s.add_argument("--out", default="results")
+    s.add_argument("--readme", help="also refresh the End-to-end block in this README")
+    s.add_argument("--render-only", action="store_true",
+                   help="only re-render the README block from OUT/e2e.json")
+    s.set_defaults(fn=cmd_e2e)
 
     a = ap.parse_args(argv)
     if a.cmd == "tune" and not a.kernel:
