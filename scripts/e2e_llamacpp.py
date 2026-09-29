@@ -44,7 +44,7 @@ def main() -> int:
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=3600)
             if r.returncode != 0:
                 raise SystemExit(r.stderr)
-            flags = " ".join(cmd[3:]).replace(path, "<gguf>")
+            flags = " ".join(cmd[5:]).replace(path, "<gguf>")  # without -m, -t
             row = {"impl": "llama.cpp", "type": label, "threads": th}
             for t in json.loads(r.stdout):
                 commit = t.get("build_commit")
@@ -68,9 +68,9 @@ def main() -> int:
                 "then llama-quantize",
         "note": (f"llama.cpp build `{commit}` (CMake Release, -DGGML_NATIVE=ON, OpenMP), CPU "
                  f"backend with its default extra buffer types: `llama-bench -v` shows the "
-                 f"Q4_0 matrices (and the Q8_0 embedding) repacked into ggml's AMX buffer, "
+                 f"Q4_0 weight matrices repacked into ggml's AMX buffer, "
                  f"i.e. llama.cpp runs its AMX-INT8 kernels here. "
-                 f"`llama-bench {flags}`, mean of {a.reps} reps, idle-wait before each run. "
+                 f"`llama-bench -t {{{','.join(map(str, threads))}}} {flags}`, mean of {a.reps} reps, idle-wait before each run. "
                  "llama.cpp's tg128 starts from an empty context; ours decodes 128 tokens after "
                  "the 64-token prompt. `q4_0` is llama-quantize's default Q4_0 mix (the tied "
                  "token embedding/output matrix at Q8_0), `q4_0-pure` quantizes every matrix "

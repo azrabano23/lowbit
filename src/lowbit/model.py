@@ -12,7 +12,8 @@ Every linear layer goes through a pluggable backend chosen at load time:
   mxfp4   OCP MXFP4 (E2M1, block 32, E8M0 scale)        (``gemm_mxfp4``)
 
 Weights are quantized once, round-to-nearest, with the library's quantizers
-(group 128 for int4, block 32 for MXFP4). The q/k/v projections and the
+(group 128 for int4 - symmetric absmax/7 by default, optionally asymmetric or
+ggml-Q4_0-style signed-max scales - and block 32 for MXFP4). The q/k/v projections and the
 gate/up projections are concatenated along N into one GEMM each (quantization
 is per output row, so this does not change any quantized value). Norm weights,
 biases, the embedding table used for lookup and the KV cache stay fp32.
@@ -143,12 +144,13 @@ class _LowbitLinear(Linear):
 class W4A16Linear(_LowbitLinear):
     kind = "w4a16"
 
-    def __init__(self, w, b=None, threads=None, asym=False, params=None, **_):
+    def __init__(self, w, b=None, threads=None, asym=False, params=None, int4_scale="absmax",
+                 **_):
         from .formats import quantize_int4
         from .kernels import gemm_w4a16
         super().__init__(w, b, threads)
         self._gemm = gemm_w4a16
-        self.wq = quantize_int4(w, asym=asym)
+        self.wq = quantize_int4(w, asym=asym, scale=int4_scale)
         self.params = params
         self.nbytes = self.wq.nbytes
 
@@ -156,12 +158,13 @@ class W4A16Linear(_LowbitLinear):
 class W4A8Linear(_LowbitLinear):
     kind = "w4a8"
 
-    def __init__(self, w, b=None, threads=None, asym=False, params=None, **_):
+    def __init__(self, w, b=None, threads=None, asym=False, params=None, int4_scale="absmax",
+                 **_):
         from .formats import quantize_int4
         from .kernels import gemm_w4a8
         super().__init__(w, b, threads)
         self._gemm = gemm_w4a8
-        self.wq = quantize_int4(w, asym=asym)
+        self.wq = quantize_int4(w, asym=asym, scale=int4_scale)
         self.params = params
         self.nbytes = self.wq.nbytes
 
@@ -277,13 +280,13 @@ def _threadpool_controller():
 class Model:
     def __init__(self, cfg: ModelConfig, weights: dict[str, np.ndarray], backend: str = "fp32",
                  threads: int | None = None, asym: bool = False, quantize_lm_head: bool = True,
-                 params=None):
+                 params=None, int4_scale: str = "absmax"):
         if backend not in LINEARS:
             raise ValueError(f"backend must be one of {BACKENDS}")
         self.cfg, self.backend, self.threads = cfg, backend, threads
-        self.asym, self.quantize_lm_head = asym, quantize_lm_head
+        self.asym, self.quantize_lm_head, self.int4_scale = asym, quantize_lm_head, int4_scale
         lin = LINEARS[backend]
-        kw = dict(threads=threads, asym=asym, params=params)
+        kw = dict(threads=threads, asym=asym, params=params, int4_scale=int4_scale)
         W = weights
         g = lambda n: np.asarray(W[n], np.float32)  # noqa: E731
         self.embed = np.ascontiguousarray(g("model.embed_tokens.weight"))

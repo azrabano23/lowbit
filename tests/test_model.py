@@ -124,6 +124,21 @@ def test_quantized_backend_close_to_fp32(tiny, backend):
     assert _rel(lin(x), x.astype(np.float64) @ deq.T) < tol
 
 
+@pytest.mark.parametrize("kw", [dict(asym=True), dict(int4_scale="signed-max"),
+                                dict(quantize_lm_head=False)])
+def test_int4_quantizer_variants(tiny, kw):
+    cfg, W = tiny
+    toks = (np.arange(24) * 5) % cfg.vocab_size
+    ref = M.Model(cfg, W).forward(toks, logits="all")
+    for be in ("w4a16", "w4a8"):
+        q = M.Model(cfg, W, backend=be, **kw)
+        assert _rel(q.forward(toks, logits="all"), ref) < 0.1
+        if "quantize_lm_head" in kw:
+            assert isinstance(q.lm_head, M.FP32Linear)
+        else:
+            assert (q.lm_head.wq.zeros is not None) == kw.get("asym", False)
+
+
 def test_quantized_kv_decode_matches_full(tiny):
     cfg, W = tiny
     m = M.Model(cfg, W, backend="w4a8", threads=2)

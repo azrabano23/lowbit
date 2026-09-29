@@ -147,7 +147,8 @@ def main(argv=None) -> int:
                    help="tiny random model and random tokens (no download; smoke test)")
     s.add_argument("--backend", action="append",
                    help="fp32 | w4a16 | w4a8 | mxfp4, optionally +asym (int4 zero-point) "
-                        "and/or +fp32head (LM head not quantized); repeatable")
+                        "or +smax (int4 signed-max scale), and/or +fp32head (LM head not "
+                        "quantized); repeatable")
     s.add_argument("--threads", type=int, action="append")
     s.add_argument("--prompt", type=int, default=64, help="prompt tokens")
     s.add_argument("--decode", type=int, default=128, help="decode steps")

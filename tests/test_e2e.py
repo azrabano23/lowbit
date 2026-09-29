@@ -17,6 +17,17 @@ def test_eval_text_pinned():
     assert t.startswith(" = Robert Boulter = ") and len(t) == 88203
 
 
+def test_parse_backend():
+    assert e2e.parse_backend("w4a8") == {"backend": "w4a8", "asym": False,
+                                         "quantize_lm_head": True, "int4_scale": "absmax"}
+    kw = e2e.parse_backend("w4a16+smax+fp32head")
+    assert kw["int4_scale"] == "signed-max" and not kw["quantize_lm_head"]
+    assert e2e.parse_backend("w4a16+asym")["asym"]
+    for bad in ("fp16", "mxfp4+asym", "w4a16+asym+smax", "w4a8+foo"):
+        with pytest.raises(ValueError):
+            e2e.parse_backend(bad)
+
+
 def test_e2e_cli_tiny(tmp_path):
     readme = tmp_path / "README.md"
     readme.write_text(f"# x\n\n{e2e.BEGIN}\nold\n{e2e.END}\ntail\n")

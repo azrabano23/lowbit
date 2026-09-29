@@ -245,15 +245,19 @@ def quality(model: M.Model, ids, ctx: int = 1024, n_tokens: int = 20480) -> dict
 def parse_backend(spec: str) -> dict:
     """'w4a16', 'w4a16+asym', 'w4a8+fp32head', ... -> Model keyword arguments.
 
-    +asym     asymmetric int4 (uint8 zero-point) instead of symmetric
+    +asym     asymmetric int4 (uint8 zero-point) instead of symmetric absmax/7
+    +smax     symmetric int4 with a signed-max scale (m / -8, ggml Q4_0's rule)
     +fp32head keep the LM head in fp32 (all other linears use the backend)
     """
     name, *opts = spec.split("+")
-    if name not in M.BACKENDS or any(o not in ("asym", "fp32head") for o in opts):
+    if name not in M.BACKENDS or any(o not in ("asym", "smax", "fp32head") for o in opts):
         raise ValueError(f"bad backend spec {spec!r}")
-    if name in ("fp32", "mxfp4") and "asym" in opts:
-        raise ValueError(f"{spec!r}: +asym only applies to the int4 backends")
-    return {"backend": name, "asym": "asym" in opts, "quantize_lm_head": "fp32head" not in opts}
+    if name in ("fp32", "mxfp4") and ("asym" in opts or "smax" in opts):
+        raise ValueError(f"{spec!r}: +asym/+smax only apply to the int4 backends")
+    if "asym" in opts and "smax" in opts:
+        raise ValueError(f"{spec!r}: +asym and +smax are exclusive")
+    return {"backend": name, "asym": "asym" in opts, "quantize_lm_head": "fp32head" not in opts,
+            "int4_scale": "signed-max" if "smax" in opts else "absmax"}
 
 
 def run(model_dir=None, backends=M.BACKENDS, threads_list=(1, 4), do_speed=True,
@@ -287,7 +291,8 @@ def run(model_dir=None, backends=M.BACKENDS, threads_list=(1, 4), do_speed=True,
     for be in backends:
         t0 = time.perf_counter()
         kw = parse_backend(be)
-        kw["asym"] = kw["asym"] or asym
+        if asym and kw["backend"] in ("w4a16", "w4a8") and kw["int4_scale"] == "absmax":
+            kw["asym"] = True  # --asym: every int4 backend asymmetric
         model = M.Model(cfg, W, threads=max(threads_list), **kw)
         load_s = time.perf_counter() - t0
         log(f"== {be}: built in {load_s:.1f} s (incl. quantization), linear weights "
@@ -466,9 +471,12 @@ def render(res: dict, validation: dict | None = None, llama: dict | None = None)
             out.append(f"| {q['backend']} | {q['ppl']:.3f} | {dp} | {ag} | {gs} |")
         out.append("")
         if any("+" in q["backend"] for q in ql):
-            out.append("Ablations (quality only): `+asym` = asymmetric int4 with a uint8 "
-                       "zero-point per group; `+fp32head` = LM head left in fp32, every other "
-                       "linear layer quantized.\n")
+            out.append("Ablations (quality only; same kernels, different quantizer "
+                       "settings): `+asym` = asymmetric int4 with a uint8 zero-point per group; "
+                       "`+smax` = symmetric int4 with a signed-max scale (the group's "
+                       "largest-magnitude weight maps exactly to −8, as in ggml's Q4_0, so all "
+                       "16 levels are used instead of absmax/7's 15); `+fp32head` = LM head "
+                       "left in fp32, every other linear layer quantized.\n")
     if validation:
         v = validation
         out.append(f"**fp32 path validated** against {v['reference']} on {v['tokens']} tokens: "
