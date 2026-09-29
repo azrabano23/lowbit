@@ -87,13 +87,21 @@ class Int4Weights:
         return w.reshape(self.n, self.kp)[:, : self.k]
 
 
-def quantize_int4(w: np.ndarray, asym: bool = False) -> Int4Weights:
+def quantize_int4(w: np.ndarray, asym: bool = False, scale: str = "absmax") -> Int4Weights:
     """Round-to-nearest int4 quantization with group size 128.
 
     symmetric: s = absmax / 7, q = clip(rint(w / s), -8, 7) + 8   (z = 8)
+    symmetric, scale="signed-max": s = m / -8 where m is the group's element of
+                largest magnitude (sign kept), same q. The extreme element lands
+                exactly on code 0 (-8) and all 16 levels are used - ggml Q4_0's
+                rule. s may be negative; the kernels only ever multiply by it.
     asymmetric: s = (max - min) / 15, z = clip(rint(-min / s), 0, 15),
                 q = clip(rint(w / s) + z, 0, 15)
     """
+    if scale not in ("absmax", "signed-max"):
+        raise ValueError(f"scale must be 'absmax' or 'signed-max', not {scale!r}")
+    if asym and scale != "absmax":
+        raise ValueError("scale='signed-max' is a symmetric rule (asym=False)")
     w = np.asarray(w, dtype=np.float32)
     n, k = w.shape
     kp = pad_to(k, GROUP)
@@ -115,6 +123,14 @@ def quantize_int4(w: np.ndarray, asym: bool = False) -> Int4Weights:
         q = np.clip(np.rint(wg / s[:, :, None]) + z[:, :, None], 0, 15)
         q = np.where(vg, q, z[:, :, None])  # padding decodes to exactly 0
         zeros = z
+    elif scale == "signed-max":
+        idx = np.abs(wg).argmax(axis=2)
+        m = np.take_along_axis(wg, idx[:, :, None], axis=2)[:, :, 0]
+        s = (m / np.float32(-8)).astype(np.float32)
+        s = np.where(s != 0, s, np.float32(1.0)).astype(np.float32)
+        q = np.clip(np.rint(wg / s[:, :, None]), -8, 7) + 8
+        q = np.where(vg, q, 8)
+        zeros = None
     else:
         amax = np.abs(wg).max(axis=2)
         s = (amax / np.float32(7)).astype(np.float32)

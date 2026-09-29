@@ -41,6 +41,22 @@ def test_w4a16(rng, isa, shape, asym):
 
 
 @pytest.mark.parametrize("isa", ISAS)
+def test_int4_negative_scales(rng, isa):
+    """signed-max quantization gives negative group scales; every int4 path must agree."""
+    x, w = _problem(rng, 5, 37, 300)
+    W = lb.quantize_int4(w, scale="signed-max")
+    assert (W.scales < 0).any()
+    bound = np.abs(x).astype(np.float64) @ np.abs(W.dequantize()).T.astype(np.float64)
+    assert_fp_close(K.gemm_w4a16(x, W, isa=isa), R.gemm_w4a16_ref(x, W), bound)
+    a = lb.quantize_act_int8(x)
+    np.testing.assert_array_equal(K.w4a8_group_acc(a, W, isa=isa), R.w4a8_group_acc_ref(a, W))
+    ref8 = R.gemm_w4a8_ref(x, W, a)
+    assert_fp_close(K.gemm_w4a8(x, W, isa=isa), ref8, bound)
+    if isa == "avx512" and K.amx_available():
+        assert_fp_close(K.gemm_w4a8_amx(x, lb.formats.pack_amx(W)), ref8, bound)
+
+
+@pytest.mark.parametrize("isa", ISAS)
 @pytest.mark.parametrize("shape", SHAPES)
 def test_mxfp4(rng, isa, shape):
     x, w = _problem(rng, *shape)

@@ -32,6 +32,28 @@ def test_int4_roundtrip_error_bound(rng, asym, k):
     np.testing.assert_array_equal(codes[:, k:], np.broadcast_to(zeros, codes[:, k:].shape))
 
 
+@pytest.mark.parametrize("k", [128, 300, 1])
+def test_int4_signed_max_scale(rng, k):
+    w = rng.standard_normal((9, k)).astype(np.float32) * 3
+    q = F.quantize_int4(w, scale="signed-max")
+    wd = q.dequantize()
+    s = np.abs(np.repeat(q.scales, 128, axis=1)[:, :k])
+    err = np.abs(wd - w)
+    # the element of largest magnitude is exact (code 0 = -8 steps of a signed scale)
+    g = w[:, :128] if k >= 128 else w
+    i = np.abs(g).argmax(axis=1)
+    np.testing.assert_allclose(wd[np.arange(9), i], g[np.arange(9), i], rtol=1e-6)
+    assert np.all(q.codes()[np.arange(9), i] == 0)
+    # half a step, except values near -m that clip from +8 to +7: at most one step
+    assert np.all(err <= s * (1 + 1e-5) + 1e-7)
+    assert np.mean(err <= 0.5 * s * (1 + 1e-5) + 1e-7) > 0.95
+    # never worse on average than absmax/7 (it has 16 levels instead of 15)
+    e0 = np.abs(F.quantize_int4(w).dequantize() - w)
+    assert np.mean(err ** 2) <= np.mean(e0 ** 2)
+    with pytest.raises(ValueError):
+        F.quantize_int4(w, asym=True, scale="signed-max")
+
+
 def test_int4_exact_on_grid(rng):
     s = np.float32(0.25)
     codes = rng.integers(-7, 8, size=(4, 256))
