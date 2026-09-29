@@ -1,0 +1,177 @@
+{
+ "meta": {
+  "date": "2026-09-29T16:42:51+00:00",
+  "llama_cpp_commit": "1c47294",
+  "tests": [
+   "pp64",
+   "pp512",
+   "tg128"
+  ],
+  "gguf": "Qwen2.5-0.5B converted with convert_hf_to_gguf.py --outtype f32, then llama-quantize",
+  "note": "llama.cpp build `1c47294` (CMake Release, -DGGML_NATIVE=ON, OpenMP), CPU backend with its default extra buffer types: `llama-bench -v` shows the Q4_0 weight matrices repacked into ggml's AMX buffer, i.e. llama.cpp runs its AMX-INT8 kernels here. `llama-bench -t {1,4} -p 64,512 -n 128 -r 5 -o json`, mean of 5 reps, idle-wait before each run. llama.cpp's tg128 starts from an empty context; ours decodes 128 tokens after the 64-token prompt. `q4_0` is llama-quantize's default Q4_0 mix (the tied token embedding/output matrix at Q8_0), `q4_0-pure` quantizes every matrix to Q4_0 (block 32, fp16 scale) \u2014 closer to our all-4-bit setup."
+ },
+ "rows": [
+  {
+   "impl": "llama.cpp",
+   "type": "f32",
+   "threads": 1,
+   "pp64": 116.813228,
+   "pp64_stddev": 2.615763,
+   "model_type": "qwen2 1B all F32",
+   "model_size": 1976131072,
+   "pp512": 126.452766,
+   "pp512_stddev": 2.230262,
+   "tg128": 6.753624,
+   "tg128_stddev": 0.055135
+  },
+  {
+   "impl": "llama.cpp",
+   "type": "f32",
+   "threads": 4,
+   "pp64": 405.158523,
+   "pp64_stddev": 4.795147,
+   "model_type": "qwen2 1B all F32",
+   "model_size": 1976131072,
+   "pp512": 450.980783,
+   "pp512_stddev": 11.36206,
+   "tg128": 24.364592,
+   "tg128_stddev": 0.361307
+  },
+  {
+   "impl": "llama.cpp",
+   "type": "q4_0",
+   "threads": 1,
+   "pp64": 323.769161,
+   "pp64_stddev": 40.889924,
+   "model_type": "qwen2 1B Q4_0",
+   "model_size": 346206720,
+   "pp512": 327.621567,
+   "pp512_stddev": 4.29937,
+   "tg128": 29.644276,
+   "tg128_stddev": 0.30019
+  },
+  {
+   "impl": "llama.cpp",
+   "type": "q4_0",
+   "threads": 4,
+   "pp64": 1119.681594,
+   "pp64_stddev": 35.363259,
+   "model_type": "qwen2 1B Q4_0",
+   "model_size": 346206720,
+   "pp512": 1160.020404,
+   "pp512_stddev": 57.54691,
+   "tg128": 96.177004,
+   "tg128_stddev": 7.859975
+  },
+  {
+   "impl": "llama.cpp",
+   "type": "q4_0-pure",
+   "threads": 1,
+   "pp64": 350.999949,
+   "pp64_stddev": 9.313379,
+   "model_type": "qwen2 1B Q4_0",
+   "model_size": 278139392,
+   "pp512": 325.630365,
+   "pp512_stddev": 9.927239,
+   "tg128": 33.310476,
+   "tg128_stddev": 0.553973
+  },
+  {
+   "impl": "llama.cpp",
+   "type": "q4_0-pure",
+   "threads": 4,
+   "pp64": 1142.460464,
+   "pp64_stddev": 66.458283,
+   "model_type": "qwen2 1B Q4_0",
+   "model_size": 278139392,
+   "pp512": 1201.243642,
+   "pp512_stddev": 35.39646,
+   "tg128": 117.470412,
+   "tg128_stddev": 6.004109
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "fp32",
+   "threads": 1,
+   "pp64": 84.47921691143746,
+   "pp512": 126.13465491239847,
+   "tg128": 6.166240649442134
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "w4a16",
+   "threads": 1,
+   "pp64": 77.14991612945148,
+   "pp512": 66.10798891314256,
+   "tg128": 20.108763178584212
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "w4a8",
+   "threads": 1,
+   "pp64": 164.26025984855536,
+   "pp512": 141.26945218104106,
+   "tg128": 25.869406979261562
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "mxfp4",
+   "threads": 1,
+   "pp64": 70.81335119793376,
+   "pp512": 62.5417773423099,
+   "tg128": 19.739258106856948
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "fp32",
+   "threads": 4,
+   "pp64": 241.7929978409818,
+   "pp512": 292.6994250264705,
+   "tg128": 20.661394164582937
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "w4a16",
+   "threads": 4,
+   "pp64": 199.19472172368444,
+   "pp512": 175.989462988395,
+   "tg128": 52.19329606641923
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "w4a8",
+   "threads": 4,
+   "pp64": 380.1786178947528,
+   "pp512": 249.85439454553455,
+   "tg128": 63.799237707173766
+  },
+  {
+   "impl": "lowbit (numpy model)",
+   "type": "mxfp4",
+   "threads": 4,
+   "pp64": 207.63797524783237,
+   "pp512": 168.22455041964454,
+   "tg128": 50.1261875274075
+  }
+ ],
+ "perplexity": {
+  "f32": {
+   "ppl": 12.1989,
+   "stderr": 0.32711,
+   "chunks": 21,
+   "ctx": 1024
+  },
+  "q4_0": {
+   "ppl": 13.6413,
+   "stderr": 0.36994,
+   "chunks": 21,
+   "ctx": 1024
+  },
+  "q4_0-pure": {
+   "ppl": 14.2198,
+   "stderr": 0.39067,
+   "chunks": 21,
+   "ctx": 1024
+  }
+ }
+}

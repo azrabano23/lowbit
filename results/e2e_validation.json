@@ -1,0 +1,17 @@
+{
+ "date": "2026-09-29T15:15:56+00:00",
+ "model": "Qwen2.5-0.5B",
+ "reference": "transformers 5.17.0 / torch 2.14.0+cu130 (fp32, eager attention)",
+ "python": "3.11.15",
+ "tokens": 256,
+ "logits_max_abs_diff": 0.00020837783813476562,
+ "logits_max_abs": 30.920272827148438,
+ "logits_max_rel_diff": 6.739197942806641e-06,
+ "logits_mean_abs_diff": 4.60358387499582e-06,
+ "argmax_agreement": 1.0,
+ "mean_nll_ours": 2.8370165554726983,
+ "mean_nll_ref": 2.837016796308869,
+ "greedy_tokens": 64,
+ "greedy_identical_prefix": 64,
+ "greedy_text_ours": " 2001 . He also starred in the film The Bill in 2002 . He has also appeared in several television series , including The Bill in 2003 , The Bill in 2004 , The Bill in 2005 , The Bill in 20"
+}
